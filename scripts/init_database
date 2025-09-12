@@ -1,0 +1,45 @@
+-- ============================================================
+-- Script Name   : init_database.sql
+-- Purpose       : Initialize the ECommerce_DWH database
+-- Description   : 
+--   - Drop the database if it already exists
+--   - Recreate the database from scratch
+--   - Create schemas (bronze, silver, gold) 
+--     following Medallion Architecture
+--
+-- Bronze : Raw ingested data, minimally processed
+-- Silver : Cleaned and transformed data, ready for analytics
+-- Gold   : Curated business-level data for reporting & dashboards
+--
+-- Author        : [Your Name]
+-- Date Created  : [Insert Date]
+-- ============================================================
+
+-- Drop and recreate the 'ECommerce_DWH' database
+IF EXISTS (SELECT 1 FROM sys.databases WHERE name = 'ECommerce_DWH')
+BEGIN 
+    -- Force single-user mode to terminate active connections
+    ALTER DATABASE ECommerce_DWH SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+
+    -- Drop the existing database
+    DROP DATABASE ECommerce_DWH;
+END;
+GO
+
+-- Create the 'ECommerce_DWH' Database
+CREATE DATABASE ECommerce_DWH;
+GO
+
+-- Switch context to the new database
+USE ECommerce_DWH;
+GO
+
+-- Create schemas for Medallion Architecture
+CREATE SCHEMA bronze;  -- Raw data
+GO
+
+CREATE SCHEMA silver;  -- Cleaned/Transformed data
+GO
+
+CREATE SCHEMA gold;    -- Curated/Business data
+GO
