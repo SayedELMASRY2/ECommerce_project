@@ -15,10 +15,10 @@ It includes **Dimensions** and **Facts** with SQL Server data types, purposes, a
 | Column Name        | Data Type        | Description |
 |--------------------|-----------------|-------------|
 | customer_id        | INT             | Unique identifier for each customer. |
-| first_name         | NVARCHAR(100)   | Customer's first name. |
-| last_name          | NVARCHAR(100)   | Customer's last name. |
-| email              | NVARCHAR(255)   | Customer's email address. |
-| phone              | NVARCHAR(50)    | Customer's phone number. |
+| first_name         | NVARCHAR(45)   | Customer's first name. |
+| last_name          | NVARCHAR(45)   | Customer's last name. |
+| email              | NVARCHAR(60)   | Customer's email address. |
+| phone              | NVARCHAR(20)    | Customer's phone number. |
 | address            | NVARCHAR(255)   | Customer's address. |
 | registration_date  | DATETIME        | Date when the customer registered. |
 
@@ -31,10 +31,10 @@ It includes **Dimensions** and **Facts** with SQL Server data types, purposes, a
 | Column Name     | Data Type        | Description |
 |-----------------|-----------------|-------------|
 | product_id      | INT             | Unique identifier for the product. |
-| name            | NVARCHAR(200)   | Name of the product. |
-| description     | NVARCHAR(MAX)   | Detailed description of the product. |
-| price           | DECIMAL(18,2)   | Price of the product. |
-| sku             | NVARCHAR(100)   | Stock keeping unit identifier. |
+| name            | NVARCHAR(100)   | Name of the product. |
+| description     | NVARCHAR(1000)  | Detailed description of the product. |
+| price           | DECIMAL()       | Price of the product. |
+| sku             | NVARCHAR(45)   | Stock keeping unit identifier. |
 | stock_quantity  | INT             | Quantity available in stock. |
 | category_id     | INT             | Foreign key to `dim_categories`. |
 | supplier_id     | INT             | Foreign key to `dim_suppliers`. |
@@ -48,8 +48,8 @@ It includes **Dimensions** and **Facts** with SQL Server data types, purposes, a
 | Column Name   | Data Type        | Description |
 |---------------|-----------------|-------------|
 | category_id   | INT             | Unique identifier for the category. |
-| name          | NVARCHAR(100)   | Category name. |
-| description   | NVARCHAR(MAX)   | Description of the category. |
+| name          | NVARCHAR(45)   | Category name. |
+| description   | NVARCHAR(10000)   | Description of the category. |
 | parent_id     | INT             | Parent category ID for hierarchy. |
 
 ---
@@ -61,11 +61,11 @@ It includes **Dimensions** and **Facts** with SQL Server data types, purposes, a
 | Column Name     | Data Type        | Description |
 |-----------------|-----------------|-------------|
 | supplier_id     | INT             | Unique identifier for the supplier. |
-| name            | NVARCHAR(200)   | Supplier name. |
-| contact_person  | NVARCHAR(200)   | Contact person for the supplier. |
-| email           | NVARCHAR(255)   | Supplier's email address. |
-| phone           | NVARCHAR(50)    | Supplier's phone number. |
-| address         | NVARCHAR(255)   | Supplier's address. |
+| name            | NVARCHAR(45)   | Supplier name. |
+| contact_person  | NVARCHAR(45)   | Contact person for the supplier. |
+| email           | NVARCHAR(100)   | Supplier's email address. |
+| phone           | NVARCHAR(45)    | Supplier's phone number. |
+| address         | NVARCHAR(100)   | Supplier's address. |
 
 ---
 
@@ -93,8 +93,8 @@ It includes **Dimensions** and **Facts** with SQL Server data types, purposes, a
 |---------------|-----------------|-------------|
 | order_id      | INT             | Unique identifier for the order. |
 | customer_id   | INT             | Foreign key to `dim_customers`. |
-| total_amount  | DECIMAL(18,2)   | Total amount of the order. |
-| status        | NVARCHAR(50)    | Order status (e.g., Completed, Pending). |
+| total_amount  | DECIMAL()   | Total amount of the order. |
+| status        | NVARCHAR(45)    | Order status (e.g., Completed, Pending). |
 | order_date    | DATETIME        | Date when the order was placed. |
 | category_id   | INT             | Linked category from discount. |
 
@@ -110,7 +110,7 @@ It includes **Dimensions** and **Facts** with SQL Server data types, purposes, a
 | order_id         | INT             | Foreign key to `fact_orders`. |
 | product_id       | INT             | Foreign key to `dim_products`. |
 | quantity         | INT             | Number of units ordered. |
-| unit_price       | DECIMAL(18,2)   | Price per unit at the time of order. |
+| unit_price       | DECIMAL()   | Price per unit at the time of order. |
 
 ---
 
@@ -123,10 +123,10 @@ It includes **Dimensions** and **Facts** with SQL Server data types, purposes, a
 | payment_id      | INT             | Unique identifier for the payment. |
 | order_id        | INT             | Foreign key to `fact_orders`. |
 | customer_id     | INT             | Foreign key to `dim_customers`. |
-| amount          | DECIMAL(18,2)   | Payment amount. |
+| amount          | DECIMAL()   | Payment amount. |
 | payment_date    | DATETIME        | Date of payment. |
-| payment_method  | NVARCHAR(50)    | Payment method (e.g., Credit Card). |
-| status          | NVARCHAR(50)    | Payment status (e.g., Paid, Failed). |
+| payment_method  | NVARCHAR(45)    | Payment method (e.g., Credit Card). |
+| status          | NVARCHAR(45)    | Payment status (e.g., Paid, Failed). |
 
 ---
 
@@ -140,7 +140,7 @@ It includes **Dimensions** and **Facts** with SQL Server data types, purposes, a
 | product_id    | INT             | Foreign key to `dim_products`. |
 | customer_id   | INT             | Foreign key to `dim_customers`. |
 | rating        | INT             | Rating given by the customer. |
-| comment       | NVARCHAR(MAX)   | Review comments. |
+| comment       | NVARCHAR(1000)   | Review comments. |
 | review_date   | DATETIME        | Date of the review. |
 
 ---
@@ -154,8 +154,8 @@ It includes **Dimensions** and **Facts** with SQL Server data types, purposes, a
 | return_id     | INT             | Unique identifier for the return record. |
 | order_id      | INT             | Foreign key to `fact_orders`. |
 | return_date   | DATETIME        | Date of return. |
-| reason        | NVARCHAR(MAX)   | Reason for the return. |
-| status        | NVARCHAR(50)    | Return status. |
+| reason        | NVARCHAR(45)   | Reason for the return. |
+| status        | NVARCHAR(45)    | Return status. |
 
 ---
 
@@ -168,9 +168,9 @@ It includes **Dimensions** and **Facts** with SQL Server data types, purposes, a
 | shipping_id       | INT             | Unique identifier for the shipping record. |
 | order_id          | INT             | Foreign key to `fact_orders`. |
 | shipping_date     | DATETIME        | Date of shipping. |
-| tracking_number   | NVARCHAR(100)   | Tracking number provided by carrier. |
-| carrier           | NVARCHAR(100)   | Shipping carrier name. |
-| status            | NVARCHAR(50)    | Shipping status. |
+| tracking_number   | NVARCHAR(45)   | Tracking number provided by carrier. |
+| carrier           | NVARCHAR(45)   | Shipping carrier name. |
+| status            | NVARCHAR(45)    | Shipping status. |
 
 ---
 
@@ -183,7 +183,7 @@ It includes **Dimensions** and **Facts** with SQL Server data types, purposes, a
 | movement_id     | INT             | Unique identifier for the inventory movement. |
 | product_id      | INT             | Foreign key to `dim_products`. |
 | quantity        | INT             | Quantity moved (positive=inbound, negative=outbound). |
-| movement_type   | NVARCHAR(50)    | Type of movement (Inbound/Outbound). |
+| movement_type   | NVARCHAR(45)    | Type of movement (Inbound/Outbound). |
 | movement_date   | DATETIME        | Date of the movement. |
 
 ---
