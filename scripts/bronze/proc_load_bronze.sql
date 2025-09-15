@@ -4,6 +4,8 @@
                  into the Bronze Layer (Raw Ingestion).
    Author      : Sayed Elmasry
    Date        : 2025-09-13
+
+   Usage       : EXEC bronze.load_bronze;
    ============================================================ */
 
 CREATE OR ALTER PROCEDURE bronze.load_bronze AS
