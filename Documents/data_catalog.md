@@ -1,166 +1,189 @@
-# 📘 Gold Layer Data Catalog
+# Gold Layer Data Catalog
 
-This catalog documents the **Gold Layer Views** created in the data warehouse.  
-Each view represents either a **Dimension** or a **Fact** table in the Star Schema.
-
----
-
-## 🟦 Dimension Views
-
-### 1. `gold.dim_customers`
-**Description:** Provides customer attributes for analytics.  
-**Source:** `silver.crm_customers`  
-**Columns:**
-- `customer_id` – Unique customer identifier
-- `first_name` – Customer's first name
-- `last_name` – Customer's last name
-- `email` – Customer email address
-- `phone` – Customer phone number
-- `address` – Customer physical address
-- `registration_date` – Date the customer registered
+## Overview
+This catalog describes the **Gold Layer** views created from the Silver Layer.  
+It includes **Dimensions** and **Facts** with SQL Server data types, purposes, and descriptions.
 
 ---
 
-### 2. `gold.dim_products`
-**Description:** Provides product details and related attributes.  
-**Source:** `silver.erp_products`  
-**Columns:**
-- `product_id` – Unique product identifier
-- `name` – Product name
-- `description` – Product description
-- `price` – Product price
-- `sku` – Stock keeping unit code
-- `stock_quantity` – Available stock
-- `category_id` – Related product category
-- `supplier_id` – Supplier providing the product
+## Dimension Tables
+
+### 1. gold.dim_customers
+- **Purpose:** Stores customer details for analysis and reporting.
+- **Relationships:** Links to `fact_orders`, `fact_payments`, and `fact_reviews` via `customer_id`.
+
+| Column Name        | Data Type        | Description |
+|--------------------|-----------------|-------------|
+| customer_id        | INT             | Unique identifier for each customer. |
+| first_name         | NVARCHAR(100)   | Customer's first name. |
+| last_name          | NVARCHAR(100)   | Customer's last name. |
+| email              | NVARCHAR(255)   | Customer's email address. |
+| phone              | NVARCHAR(50)    | Customer's phone number. |
+| address            | NVARCHAR(255)   | Customer's address. |
+| registration_date  | DATETIME        | Date when the customer registered. |
 
 ---
 
-### 3. `gold.dim_categories`
-**Description:** Provides product category hierarchy.  
-**Source:** `silver.erp_categories`  
-**Columns:**
-- `category_id` – Unique category identifier
-- `name` – Category name
-- `description` – Category description
-- `parent_id` – Parent category (for hierarchical structure)
+### 2. gold.dim_products
+- **Purpose:** Provides product details and attributes.
+- **Relationships:** Links to `fact_order_details`, `fact_reviews`, and `fact_inventory_movements` via `product_id`.
+
+| Column Name     | Data Type        | Description |
+|-----------------|-----------------|-------------|
+| product_id      | INT             | Unique identifier for the product. |
+| name            | NVARCHAR(200)   | Name of the product. |
+| description     | NVARCHAR(MAX)   | Detailed description of the product. |
+| price           | DECIMAL(18,2)   | Price of the product. |
+| sku             | NVARCHAR(100)   | Stock keeping unit identifier. |
+| stock_quantity  | INT             | Quantity available in stock. |
+| category_id     | INT             | Foreign key to `dim_categories`. |
+| supplier_id     | INT             | Foreign key to `dim_suppliers`. |
 
 ---
 
-### 4. `gold.dim_suppliers`
-**Description:** Provides supplier details.  
-**Source:** `silver.erp_suppliers`  
-**Columns:**
-- `supplier_id` – Unique supplier identifier
-- `name` – Supplier name
-- `contact_person` – Main contact person
-- `email` – Contact email
-- `phone` – Contact phone
-- `address` – Supplier address
+### 3. gold.dim_categories
+- **Purpose:** Represents product categories and hierarchy.
+- **Relationships:** Links to `dim_products` via `category_id`.
+
+| Column Name   | Data Type        | Description |
+|---------------|-----------------|-------------|
+| category_id   | INT             | Unique identifier for the category. |
+| name          | NVARCHAR(100)   | Category name. |
+| description   | NVARCHAR(MAX)   | Description of the category. |
+| parent_id     | INT             | Parent category ID for hierarchy. |
 
 ---
 
-### 5. `gold.dim_date`
-**Description:** Provides calendar attributes (year, month, day, weekday).  
-**Source:** `silver.erp_orders`  
-**Columns:**
-- `date_key` – Date identifier (YYYY-MM-DD)
-- `year` – Calendar year
-- `month` – Calendar month number
-- `day` – Calendar day number
-- `weekday_name` – Name of the weekday
+### 4. gold.dim_suppliers
+- **Purpose:** Stores supplier information.
+- **Relationships:** Links to `dim_products` via `supplier_id`.
+
+| Column Name     | Data Type        | Description |
+|-----------------|-----------------|-------------|
+| supplier_id     | INT             | Unique identifier for the supplier. |
+| name            | NVARCHAR(200)   | Supplier name. |
+| contact_person  | NVARCHAR(200)   | Contact person for the supplier. |
+| email           | NVARCHAR(255)   | Supplier's email address. |
+| phone           | NVARCHAR(50)    | Supplier's phone number. |
+| address         | NVARCHAR(255)   | Supplier's address. |
 
 ---
 
-## 🟥 Fact Views
+### 5. gold.dim_date
+- **Purpose:** Provides calendar breakdown (date, year, month, day, weekday).
+- **Relationships:** Links to `fact_orders`, `fact_payments`, `fact_shipping` via date fields.
 
-### 6. `gold.fact_orders`
-**Description:** Provides order-level measures and links to customers.  
-**Source:** `silver.erp_orders`, `silver.crm_discount`  
-**Columns:**
-- `order_id` – Unique order identifier
-- `customer_id` – Related customer
-- `total_amount` – Total order amount
-- `status` – Order status
-- `order_date` – Date of order placement
-- `category_id` – Linked discount category (if any)
-
----
-
-### 7. `gold.fact_order_details`
-**Description:** Provides line-item level details per order.  
-**Source:** `silver.erp_order_details`  
-**Columns:**
-- `order_detail_id` – Unique line-item identifier
-- `order_id` – Related order
-- `product_id` – Related product
-- `quantity` – Quantity ordered
-- `unit_price` – Price per unit at order time
+| Column Name   | Data Type   | Description |
+|---------------|------------|-------------|
+| date_key      | DATE        | Unique date key. |
+| year          | INT         | Year number. |
+| month         | INT         | Month number (1-12). |
+| day           | INT         | Day of the month (1-31). |
+| weekday_name  | NVARCHAR(20)| Name of the weekday (e.g., Monday). |
 
 ---
 
-### 8. `gold.fact_payments`
-**Description:** Provides payment transactions and methods.  
-**Source:** `silver.erp_payments`  
-**Columns:**
-- `payment_id` – Unique payment identifier
-- `order_id` – Related order
-- `customer_id` – Related customer
-- `amount` – Payment amount
-- `payment_date` – Date of payment
-- `payment_method` – Payment method used
-- `status` – Payment status
+## Fact Tables
+
+### 6. gold.fact_orders
+- **Purpose:** Captures order-level transactions.
+- **Relationships:** Links to `dim_customers` via `customer_id`, `dim_date` via `order_date`, and `dim_categories` via `category_id`.
+
+| Column Name   | Data Type        | Description |
+|---------------|-----------------|-------------|
+| order_id      | INT             | Unique identifier for the order. |
+| customer_id   | INT             | Foreign key to `dim_customers`. |
+| total_amount  | DECIMAL(18,2)   | Total amount of the order. |
+| status        | NVARCHAR(50)    | Order status (e.g., Completed, Pending). |
+| order_date    | DATETIME        | Date when the order was placed. |
+| category_id   | INT             | Linked category from discount. |
 
 ---
 
-### 9. `gold.fact_reviews`
-**Description:** Provides product reviews and ratings by customers.  
-**Source:** `silver.crm_reviews`  
-**Columns:**
-- `review_id` – Unique review identifier
-- `product_id` – Reviewed product
-- `customer_id` – Reviewer customer
-- `rating` – Numeric rating score
-- `comment` – Customer review comment
-- `review_date` – Date of review submission
+### 7. gold.fact_order_details
+- **Purpose:** Stores details for each order line item.
+- **Relationships:** Links to `fact_orders` via `order_id`, and `dim_products` via `product_id`.
+
+| Column Name      | Data Type        | Description |
+|------------------|-----------------|-------------|
+| order_detail_id  | INT             | Unique identifier for the order detail record. |
+| order_id         | INT             | Foreign key to `fact_orders`. |
+| product_id       | INT             | Foreign key to `dim_products`. |
+| quantity         | INT             | Number of units ordered. |
+| unit_price       | DECIMAL(18,2)   | Price per unit at the time of order. |
 
 ---
 
-### 10. `gold.fact_returns`
-**Description:** Provides returned orders information.  
-**Source:** `silver.erp_returns`  
-**Columns:**
-- `return_id` – Unique return identifier
-- `order_id` – Related order
-- `return_date` – Date of return
-- `reason` – Reason for return
-- `status` – Return status
+### 8. gold.fact_payments
+- **Purpose:** Captures payment transactions for orders.
+- **Relationships:** Links to `fact_orders` via `order_id`, and `dim_customers` via `customer_id`.
+
+| Column Name     | Data Type        | Description |
+|-----------------|-----------------|-------------|
+| payment_id      | INT             | Unique identifier for the payment. |
+| order_id        | INT             | Foreign key to `fact_orders`. |
+| customer_id     | INT             | Foreign key to `dim_customers`. |
+| amount          | DECIMAL(18,2)   | Payment amount. |
+| payment_date    | DATETIME        | Date of payment. |
+| payment_method  | NVARCHAR(50)    | Payment method (e.g., Credit Card). |
+| status          | NVARCHAR(50)    | Payment status (e.g., Paid, Failed). |
 
 ---
 
-### 11. `gold.fact_shipping`
-**Description:** Provides shipping details and tracking info.  
-**Source:** `silver.erp_shipping`  
-**Columns:**
-- `shipping_id` – Unique shipping identifier
-- `order_id` – Related order
-- `shipping_date` – Date of shipping
-- `tracking_number` – Shipment tracking number
-- `carrier` – Shipping carrier
-- `status` – Shipping status
+### 9. gold.fact_reviews
+- **Purpose:** Stores product reviews and ratings by customers.
+- **Relationships:** Links to `dim_products` via `product_id`, and `dim_customers` via `customer_id`.
+
+| Column Name   | Data Type        | Description |
+|---------------|-----------------|-------------|
+| review_id     | INT             | Unique identifier for the review. |
+| product_id    | INT             | Foreign key to `dim_products`. |
+| customer_id   | INT             | Foreign key to `dim_customers`. |
+| rating        | INT             | Rating given by the customer. |
+| comment       | NVARCHAR(MAX)   | Review comments. |
+| review_date   | DATETIME        | Date of the review. |
 
 ---
 
-### 12. `gold.fact_inventory_movements`
-**Description:** Provides stock movements (in/out) for products.  
-**Source:** `silver.erp_inventory_movements`  
-**Columns:**
-- `movement_id` – Unique movement identifier
-- `product_id` – Related product
-- `quantity` – Quantity moved
-- `movement_type` – Movement type (in/out)
-- `movement_date` – Date of stock movement
+### 10. gold.fact_returns
+- **Purpose:** Captures product return transactions.
+- **Relationships:** Links to `fact_orders` via `order_id`.
+
+| Column Name   | Data Type        | Description |
+|---------------|-----------------|-------------|
+| return_id     | INT             | Unique identifier for the return record. |
+| order_id      | INT             | Foreign key to `fact_orders`. |
+| return_date   | DATETIME        | Date of return. |
+| reason        | NVARCHAR(MAX)   | Reason for the return. |
+| status        | NVARCHAR(50)    | Return status. |
 
 ---
 
-📌 This catalog ensures a clear understanding of the **Gold Layer** design for reporting & analytics.
+### 11. gold.fact_shipping
+- **Purpose:** Captures shipping and delivery information.
+- **Relationships:** Links to `fact_orders` via `order_id`.
+
+| Column Name       | Data Type        | Description |
+|-------------------|-----------------|-------------|
+| shipping_id       | INT             | Unique identifier for the shipping record. |
+| order_id          | INT             | Foreign key to `fact_orders`. |
+| shipping_date     | DATETIME        | Date of shipping. |
+| tracking_number   | NVARCHAR(100)   | Tracking number provided by carrier. |
+| carrier           | NVARCHAR(100)   | Shipping carrier name. |
+| status            | NVARCHAR(50)    | Shipping status. |
+
+---
+
+### 12. gold.fact_inventory_movements
+- **Purpose:** Tracks inventory stock movements (in and out).
+- **Relationships:** Links to `dim_products` via `product_id`.
+
+| Column Name     | Data Type        | Description |
+|-----------------|-----------------|-------------|
+| movement_id     | INT             | Unique identifier for the inventory movement. |
+| product_id      | INT             | Foreign key to `dim_products`. |
+| quantity        | INT             | Quantity moved (positive=inbound, negative=outbound). |
+| movement_type   | NVARCHAR(50)    | Type of movement (Inbound/Outbound). |
+| movement_date   | DATETIME        | Date of the movement. |
+
+---
